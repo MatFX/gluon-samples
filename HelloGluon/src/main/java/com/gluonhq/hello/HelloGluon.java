@@ -35,9 +35,12 @@ import com.gluonhq.charm.glisten.mvc.View;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import com.gluonhq.charm.glisten.visual.Swatch;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Dimension2D;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -46,10 +49,17 @@ import javafx.stage.Stage;
 
 import static com.gluonhq.charm.glisten.application.AppManager.HOME_VIEW;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.Socket;
+
 public class HelloGluon extends Application {
 
     private final AppManager appManager = AppManager.initialize(this::postInit);
 
+    private Label label;
+    
     @Override
     public void init() {
         appManager.addViewFactory(HOME_VIEW, () -> {
@@ -60,9 +70,26 @@ public class HelloGluon extends Application {
 
             imageView.setFitHeight(200);
             imageView.setPreserveRatio(true);
+            
+            label = new Label("Hello, Gluon Mobile!");
+            
+            Button button = new Button("Connection");
+            button.setOnAction(new EventHandler<ActionEvent>() 
+            {
 
-            Label label = new Label("Hello, Gluon Mobile!");
-            VBox root = new VBox(20, imageView, label);
+				@Override
+				public void handle(ActionEvent event) 
+				{
+					  label.setText("Connection test.");
+					  connectToServer();
+					  event.consume();
+					
+				}
+            	
+            });
+
+          
+            VBox root = new VBox(20, imageView, label, button);
             root.setAlignment(Pos.CENTER);
 
             View view = new View(root) {
@@ -77,6 +104,62 @@ public class HelloGluon extends Application {
             return view;
         });
     }
+    
+    protected void connectToServer() 
+    {
+    	
+    	new Thread(new Runnable()
+		{
+
+			@Override
+			public void run() {
+				try
+				{
+					
+					javafx.application.Platform.runLater(() -> setTextValue("Build socket."));
+					
+					
+					Socket socket = new Socket("192.168.150.81", 4711);
+					//Socket socket = new Socket("localhost", 4711);
+					
+					final InputStream rein = socket.getInputStream();
+					
+					javafx.application.Platform.runLater(() -> setTextValue("got inputstream"));
+					BufferedReader buff = new BufferedReader(new InputStreamReader(rein));
+					 
+					String val = "buff ready? "+buff.ready();
+					 
+					javafx.application.Platform.runLater(() -> setTextValue(val));
+						
+					String readedLine = buff.readLine();
+					    
+					while(readedLine != null)
+					{
+				    	readedLine = buff.readLine();
+				    	
+				    	String valueToSet = readedLine;
+				    	
+				    	javafx.application.Platform.runLater(() -> setTextValue(valueToSet));
+				    	
+				    	Thread.sleep(1000);
+					}
+				}
+				catch(Exception e)
+				{
+					e.printStackTrace();
+					String except = e.getMessage();
+					javafx.application.Platform.runLater(() -> setTextValue(except));
+				}
+				
+			}
+    		
+		}).start();
+   
+    }
+
+	protected void setTextValue(String string) {
+		label.setText(string);
+	}
 
     @Override
     public void start(Stage stage) {
