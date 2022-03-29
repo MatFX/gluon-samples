@@ -42,6 +42,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
@@ -60,6 +61,8 @@ public class HelloGluon extends Application {
 
     private Label label;
     
+    private TextField textField;
+    
     @Override
     public void init() {
         appManager.addViewFactory(HOME_VIEW, () -> {
@@ -72,6 +75,10 @@ public class HelloGluon extends Application {
             imageView.setPreserveRatio(true);
             
             label = new Label("Hello, Gluon Mobile!");
+            
+            //example content: 192.168.150.81 or localhost 
+            textField = new TextField("localhost");
+            
             
             Button button = new Button("Connection");
             button.setOnAction(new EventHandler<ActionEvent>() 
@@ -89,7 +96,7 @@ public class HelloGluon extends Application {
             });
 
           
-            VBox root = new VBox(20, imageView, label, button);
+            VBox root = new VBox(20, imageView, label, textField, button);
             root.setAlignment(Pos.CENTER);
 
             View view = new View(root) {
@@ -119,8 +126,9 @@ public class HelloGluon extends Application {
 					javafx.application.Platform.runLater(() -> setTextValue("Build socket."));
 					
 					
-					Socket socket = new Socket("192.168.150.81", 4711);
+					//Socket socket = new Socket("192.168.150.81", 4711);
 					//Socket socket = new Socket("localhost", 4711);
+					Socket socket = new Socket(textField.getText().trim(), 4711);
 					
 					final InputStream rein = socket.getInputStream();
 					
