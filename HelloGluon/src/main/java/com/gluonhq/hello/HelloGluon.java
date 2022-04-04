@@ -27,7 +27,9 @@
 package com.gluonhq.hello;
 
 import com.gluonhq.attach.display.DisplayService;
+import com.gluonhq.attach.orientation.OrientationService;
 import com.gluonhq.attach.util.Platform;
+import com.gluonhq.attach.util.Services;
 import com.gluonhq.charm.glisten.application.AppManager;
 import com.gluonhq.charm.glisten.control.AppBar;
 import com.gluonhq.charm.glisten.control.FloatingActionButton;
@@ -35,9 +37,12 @@ import com.gluonhq.charm.glisten.mvc.View;
 import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import com.gluonhq.charm.glisten.visual.Swatch;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Dimension2D;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -47,6 +52,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
 
 import static com.gluonhq.charm.glisten.application.AppManager.HOME_VIEW;
 
@@ -63,18 +69,69 @@ public class HelloGluon extends Application {
     
     private TextField textField;
     
+    private Label labelOrientation;
+    
     @Override
     public void init() {
+    	
+    	
+    	//service test ios
+    	Services.get(OrientationService.class).ifPresent(service -> 
+    	{
+    		 service.orientationProperty().addListener(new ChangeListener<Orientation>() {
+
+    			@Override
+    			public void changed(ObservableValue<? extends Orientation> observable, Orientation oldValue,
+    					Orientation newValue)
+    			{
+    				System.out.println("newValue " + newValue);
+    				System.out.println("oldValue " + oldValue);
+    				if(!newValue.equals(oldValue))
+    				{
+    					//Bei Aenderung ist diese Info an die View weiterzugeben
+    					View currentView = appManager.getView();
+    					/*
+    					if(currentView != null && currentView instanceof IOrientationChange)
+    					{
+    						BasicView.fillDefaultDimension();
+    						
+    						//herumgewurschtel für den Fall die Dimension passt nicht mit der Orientierung zusammen,
+    						//ist bei meinem alten Android Handy passiert.
+    						if(newValue == Orientation.VERTICAL && BasicView.defaultDimension.getWidth() > BasicView.defaultDimension.getHeight())
+    						{
+    							BasicView.defaultDimension = new Dimension2D(BasicView.defaultDimension.getHeight(), BasicView.defaultDimension.getWidth());
+    						}
+    						else if(newValue == Orientation.HORIZONTAL && BasicView.defaultDimension.getHeight() > BasicView.defaultDimension.getWidth())
+    						{
+    							BasicView.defaultDimension = new Dimension2D(BasicView.defaultDimension.getHeight(), BasicView.defaultDimension.getWidth());
+    						}
+    						((IOrientationChange)currentView).orientationChanged();
+    					}*/
+    					
+    				}
+    				
+    			}
+    			  
+    		  });
+    		
+    	  });
+    	
+    	
+    	
+    	
         appManager.addViewFactory(HOME_VIEW, () -> {
             FloatingActionButton fab = new FloatingActionButton(MaterialDesignIcon.SEARCH.text,
                     e -> System.out.println("Search"));
 
             ImageView imageView = new ImageView(new Image(HelloGluon.class.getResourceAsStream("openduke.png")));
 
-            imageView.setFitHeight(200);
+            imageView.setFitHeight(100);
             imageView.setPreserveRatio(true);
             
             label = new Label("Hello, Gluon Mobile!");
+            
+            labelOrientation = new Label("Orientation label");
+            
             
             //example content: 192.168.150.81 or localhost 
             textField = new TextField("localhost");
@@ -96,7 +153,7 @@ public class HelloGluon extends Application {
             });
 
           
-            VBox root = new VBox(20, imageView, label, textField, button);
+            VBox root = new VBox(20, imageView, label, labelOrientation, textField, button);
             root.setAlignment(Pos.CENTER);
 
             View view = new View(root) {

@@ -54,6 +54,11 @@
             <artifactId>util</artifactId>
             <version>${attach.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.gluonhq.attach</groupId>
+            <artifactId>orientation</artifactId>
+            <version>${attach.version}</version>
+        </dependency>
     </dependencies>
 
     <repositories>
@@ -61,6 +66,11 @@
             <id>Gluon</id>
             <url>https://nexus.gluonhq.com/nexus/content/repositories/releases</url>
         </repository>
+      <repository>
+            <id>nexus</id>
+            <url>http://nexus.office.bscgmbh.de:8081/repository/maven-public/</url>
+        </repository>  
+        
     </repositories>
 
     <build>
@@ -91,6 +101,7 @@
                         <list>lifecycle</list>
                         <list>statusbar</list>
                         <list>storage</list>
+                        <list>orientation</list>
                     </attachList>
                     <mainClass>${main.class}</mainClass>
                 </configuration>
