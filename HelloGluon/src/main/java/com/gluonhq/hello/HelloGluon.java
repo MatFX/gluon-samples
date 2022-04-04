@@ -86,6 +86,7 @@ public class HelloGluon extends Application {
     			{
     				System.out.println("newValue " + newValue);
     				System.out.println("oldValue " + oldValue);
+    				//Die Abfrage könnte ein Problem sein, wenn newValue == null ist. dann würde die equals Methode nicht greifen.
     				if(!newValue.equals(oldValue))
     				{
     					//Bei Aenderung ist diese Info an die View weiterzugeben
