@@ -87,10 +87,11 @@ public class HelloGluon extends Application {
     				System.out.println("newValue " + newValue);
     				System.out.println("oldValue " + oldValue);
     				//Die Abfrage könnte ein Problem sein, wenn newValue == null ist. dann würde die equals Methode nicht greifen.
-    				if(!newValue.equals(oldValue))
+    				if(newValue != null && oldValue != null && !newValue.equals(oldValue))
     				{
     					//Bei Aenderung ist diese Info an die View weiterzugeben
     					View currentView = appManager.getView();
+    					System.out.println("currentView " + currentView);
     					/*
     					if(currentView != null && currentView instanceof IOrientationChange)
     					{
